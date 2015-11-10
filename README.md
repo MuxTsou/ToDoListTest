@@ -3,7 +3,7 @@ A Simple todo app run in Android.
 This project do not have any extenal dependcies.
 
 Android Studio 1.4
-
+  
 
 ## Bugs:
 
