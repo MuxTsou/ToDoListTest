@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -25,7 +24,6 @@ implements ToDoItemAdapter.ToDoListListener {
     private ToDoItemAdapter adapter;
     private Button addButton, finishButton;
     private Context context;
-    private boolean isEditing = false;
 
     private List<Task> tasks = new ArrayList<Task>();
 
@@ -50,13 +48,14 @@ implements ToDoItemAdapter.ToDoListListener {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if (!isEditing) {
-                isEditing = true;
-                tasks.add(new Task());
-                adapter.clear();
-                adapter.addAll(tasks);
-                getListView().setSelection(getListView().getCount() - 1);
-            }
+
+                if (adapter.getCount() == 0 || adapter.getItem(adapter.getCount()-1).getId() > 0) {
+                    tasks.add(new Task());
+                    adapter.clear();
+                    adapter.addAll(tasks);
+                    adapter.notifyDataSetChanged();
+                    getListView().setSelection(getListView().getCount() - 1);
+                }
             }
         });
         setListAdapter(adapter);
@@ -102,6 +101,7 @@ implements ToDoItemAdapter.ToDoListListener {
         tasks = getDatabaseHelper().getAllUnfinishedtasks();
         adapter.clear();
         adapter.addAll(tasks);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -109,13 +109,14 @@ implements ToDoItemAdapter.ToDoListListener {
         getDatabaseHelper().updateTask(tasks.remove(position));
         adapter.clear();
         adapter.addAll(tasks);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void setEditTaskFinished(int position, Task task) {
         task.setId((int) getDatabaseHelper().createTask(task));
         tasks.set(position, task);
-        isEditing = false;
+        adapter.notifyDataSetChanged();
     }
 
     private DatabaseHelper getDatabaseHelper() {
