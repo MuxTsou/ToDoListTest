@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -23,6 +24,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
     private Context context;
     private LayoutInflater inflater;
     private ToDoListListener listener;
+    private InputMethodManager inputMethodManager;
 
     public ToDoItemAdapter(Context context) {
         super(context, 0);
@@ -33,6 +35,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement ToDoListFinishedListener.");
         }
+        inputMethodManager = ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE));
     }
 
     public interface ToDoListListener {
@@ -49,14 +52,18 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
         final ToDoItemViewHolder holder = (ToDoItemViewHolder) convertView.getTag();
 
         final Task task = getItem(position);
+        if(task.getId() == 0)
+            holder.checkBox.setVisibility(View.GONE);
+        else
+            holder.checkBox.setVisibility(View.VISIBLE);
         holder.checkBox.setChecked(task.isFinished());
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            task.setIsFinished(isChecked);
-            if (isChecked) {
-                listener.setTaskFinished(position);
-            }
+                if (isChecked && !TextUtils.isEmpty(task.getDescription()) ) {
+                    task.setIsFinished(isChecked);
+                    listener.setTaskFinished(position);
+                }
             }
         });
         if (task.getDescription() != null && task.getDescription().length() != 0) {
@@ -71,33 +78,36 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
         holder.editTask.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-            if (!hasFocus) {
-                if (v != null && v.getParent() != null && !TextUtils.isEmpty(((EditText)v).getText())) {
-                    ((EditText) v).setOnEditorActionListener(null);
-                    String taskk = ((EditText) v).getText().toString();
-                    task.setDescription(taskk);
-                    holder.task.setText(taskk);
-                    v.setVisibility(View.GONE);
-                    holder.task.setVisibility(View.VISIBLE);
-                    listener.setEditFinished(position, task);
+                if(hasFocus) {
+                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
                 }
-            }
             }
         });
         holder.editTask.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                String taskk = ((EditText) v).getText().toString();
-                task.setDescription(taskk);
-                holder.task.setText(taskk);
-                v.setVisibility(View.GONE);
-                holder.task.setVisibility(View.VISIBLE);
-                listener.setEditFinished(position, task);
-            }
-            return false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String taskDescription = ((EditText) v).getText().toString();
+                    if(TextUtils.isEmpty(taskDescription)) {
+                        return false;
+                    } else {
+                        task.setDescription(taskDescription);
+                        holder.task.setText(taskDescription);
+                        v.setVisibility(View.GONE);
+                        holder.task.setVisibility(View.VISIBLE);
+                        listener.setEditFinished(position, task);
+                        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
+                }
+                return false;
             }
         });
+
+        if(task.getId() == 0) {
+            holder.editTask.requestFocus();
+        }
+
         return convertView;
     }
 
