@@ -37,7 +37,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
 
     public interface ToDoListListener {
         public void setTaskFinished(int position);
-        public void setEditTaskFinished(int position, Task task);
+        public void setEditFinished(int position, Task task);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
                     holder.task.setText(taskk);
                     v.setVisibility(View.GONE);
                     holder.task.setVisibility(View.VISIBLE);
-                    listener.setEditTaskFinished(position, task);
+                    listener.setEditFinished(position, task);
                 }
             }
             }
@@ -93,7 +93,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
                 holder.task.setText(taskk);
                 v.setVisibility(View.GONE);
                 holder.task.setVisibility(View.VISIBLE);
-                listener.setEditTaskFinished(position, task);
+                listener.setEditFinished(position, task);
             }
             return false;
             }

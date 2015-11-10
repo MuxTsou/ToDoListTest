@@ -113,7 +113,7 @@ implements ToDoItemAdapter.ToDoListListener {
     }
 
     @Override
-    public void setEditTaskFinished(int position, Task task) {
+    public void setEditFinished(int position, Task task) {
         task.setId((int) getDatabaseHelper().createTask(task));
         tasks.set(position, task);
         adapter.notifyDataSetChanged();
