@@ -6,18 +6,18 @@ package com.oursky.todo_android.content.model;
 
 public class Task {
     private int id;
-    private String task;
+    private String description;
     private String dueAt;
     private boolean finished = false;
 
     public Task() {}
 
-    public Task(String task) {
-        this.task = task;
+    public Task(String description) {
+        this.description = description;
     }
 
-    public Task(String task, String dueAt) {
-        this.task = task;
+    public Task(String description, String dueAt) {
+        this.description = description;
         this.dueAt = dueAt;
     }
 
@@ -29,8 +29,8 @@ public class Task {
         this.id = id;
     }
 
-    public String getTask() {
-        return task;
+    public String getDescription() {
+        return description;
     }
 
     public String getDueAt() {
@@ -45,8 +45,8 @@ public class Task {
         this.finished = finished;
     }
 
-    public void setTask(String task) {
-        this.task = task;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setDueAt(String dueAt) {

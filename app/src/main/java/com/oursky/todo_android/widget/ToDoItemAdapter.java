@@ -59,8 +59,8 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
             }
             }
         });
-        if (task.getTask() != null && task.getTask().length() != 0) {
-            holder.task.setText(task.getTask());
+        if (task.getDescription() != null && task.getDescription().length() != 0) {
+            holder.task.setText(task.getDescription());
             holder.editTask.setVisibility(View.GONE);
             holder.task.setVisibility(View.VISIBLE);
         } else {
@@ -75,7 +75,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
                 if (v != null && v.getParent() != null && !TextUtils.isEmpty(((EditText)v).getText())) {
                     ((EditText) v).setOnEditorActionListener(null);
                     String taskk = ((EditText) v).getText().toString();
-                    task.setTask(taskk);
+                    task.setDescription(taskk);
                     holder.task.setText(taskk);
                     v.setVisibility(View.GONE);
                     holder.task.setVisibility(View.VISIBLE);
@@ -89,7 +89,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 String taskk = ((EditText) v).getText().toString();
-                task.setTask(taskk);
+                task.setDescription(taskk);
                 holder.task.setText(taskk);
                 v.setVisibility(View.GONE);
                 holder.task.setVisibility(View.VISIBLE);
